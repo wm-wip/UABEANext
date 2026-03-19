@@ -1,4 +1,4 @@
-﻿using AssetsTools.NET.Extra;
+using AssetsTools.NET.Extra;
 using UABEANext4.AssetWorkspace;
 
 namespace UABEANext4.Logic.Search;
@@ -12,5 +12,6 @@ public class SearchResultItem
     public long PathId { get; init; }
     public string Offset { get; init; } = string.Empty;
     public AssetClassID Type { get; init; }
+    public string? MonoName { get; init; }
 
 }

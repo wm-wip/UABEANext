@@ -308,17 +308,21 @@ public partial class AssetDocumentViewModel : Document
                         LoadContainersIntoInfos(fileInst, infosObsCol);
 
                     // cache MonoName for all MonoBehaviour assets so the search filter
-                    // can match by script class name without any per-row I/O at query time
-                    foreach (var info in infosObsCol)
+                    // can match by script class name without any per-row I/O at query time.
+                    // only runs when the user has enabled "Resolve MonoBehaviour Script Names".
+                    if (ConfigurationManager.Settings.ResolveMonoBehaviourNames)
                     {
-                        if (info is AssetInst asset && (asset.TypeId == (int)AssetClassID.MonoBehaviour || asset.TypeId < 0))
+                        foreach (var info in infosObsCol)
                         {
-                            if (loadCt.IsCancellationRequested)
-                                loadCt.ThrowIfCancellationRequested();
-
-                            lock (fileInst.LockReader)
+                            if (info is AssetInst asset && (asset.TypeId == (int)AssetClassID.MonoBehaviour || asset.TypeId < 0))
                             {
-                                asset.MonoName = Workspace.Namer.GetMonoBehaviourNameFast(asset);
+                                if (loadCt.IsCancellationRequested)
+                                    loadCt.ThrowIfCancellationRequested();
+
+                                lock (fileInst.LockReader)
+                                {
+                                    asset.MonoName = Workspace.Namer.GetMonoBehaviourNameFast(asset);
+                                }
                             }
                         }
                     }
