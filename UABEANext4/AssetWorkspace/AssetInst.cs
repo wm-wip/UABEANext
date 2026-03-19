@@ -1,4 +1,4 @@
-﻿using AssetsTools.NET;
+using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 using System.ComponentModel;
 using UABEANext4.Logic.Configuration;
@@ -10,6 +10,7 @@ namespace UABEANext4.AssetWorkspace;
 public class AssetInst : AssetFileInfo, INotifyPropertyChanged
 {
     public string? AssetName { get; set; }
+    public string? MonoName { get; set; }
     public string? DisplayContainer { get; set; }
     public AssetsFileInstance FileInstance { get; }
 
@@ -53,6 +54,18 @@ public class AssetInst : AssetFileInfo, INotifyPropertyChanged
         
         var maxNameLen = ConfigurationManager.Settings.ListingNameLength;
         AssetName = workspace.Namer.GetAssetName(this, true, maxNameLen);
+
+        if (TypeId == (int)AssetClassID.MonoBehaviour || TypeId < 0)
+        {
+            lock (FileInstance.LockReader)
+            {
+                MonoName = workspace.Namer.GetMonoBehaviourNameFast(this);
+            }
+        }
+        else
+        {
+            MonoName = null;
+        }
         
         Update(nameof(DisplayName));
         Update(nameof(ByteSizeModified));

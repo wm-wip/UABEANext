@@ -1,4 +1,4 @@
-﻿using AssetsTools.NET;
+using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 using Avalonia;
 using Avalonia.Collections;
@@ -162,6 +162,9 @@ public partial class AssetDocumentViewModel : Document
                     if (searchRegex.IsMatch(a.PathId.ToString()))
                         return true;
 
+                    if (a.MonoName != null && searchRegex.IsMatch(a.MonoName))
+                        return true;
+
                     return false;
                 };
             }
@@ -180,6 +183,9 @@ public partial class AssetDocumentViewModel : Document
                         return true;
 
                     if (a.PathId.ToString().Contains(searchText, strCmp))
+                        return true;
+
+                    if (a.MonoName != null && a.MonoName.Contains(searchText, strCmp))
                         return true;
 
                     return false;
@@ -206,11 +212,12 @@ public partial class AssetDocumentViewModel : Document
                     if (o is not AssetInst a)
                         return false;
 
-                    // require a match on name / class id / path id first
+                    // require a match on name / class id / path id / monoName first
                     if (!searchRegex.IsMatch(a.DisplayName))
                     {
                         if (!(ClassIdToString.TryGetValue(a.Type, out string? classIdName) && searchRegex.IsMatch(classIdName))
-                            && !searchRegex.IsMatch(a.PathId.ToString()))
+                            && !searchRegex.IsMatch(a.PathId.ToString())
+                            && !(a.MonoName != null && searchRegex.IsMatch(a.MonoName)))
                         {
                             return false;
                         }
@@ -227,11 +234,12 @@ public partial class AssetDocumentViewModel : Document
                     if (o is not AssetInst a)
                         return false;
 
-                    // require a match on name / class id / path id first
+                    // require a match on name / class id / path id / monoName first
                     if (!a.DisplayName.Contains(searchText, strCmp))
                     {
                         if (!(ClassIdToString.TryGetValue(a.Type, out string? classIdName) && classIdName == searchText)
-                            && !a.PathId.ToString().Contains(searchText, strCmp))
+                            && !a.PathId.ToString().Contains(searchText, strCmp)
+                            && !(a.MonoName != null && a.MonoName.Contains(searchText, strCmp)))
                         {
                             return false;
                         }
@@ -298,6 +306,22 @@ public partial class AssetDocumentViewModel : Document
 
                     if (LoadContainers)
                         LoadContainersIntoInfos(fileInst, infosObsCol);
+
+                    // cache MonoName for all MonoBehaviour assets so the search filter
+                    // can match by script class name without any per-row I/O at query time
+                    foreach (var info in infosObsCol)
+                    {
+                        if (info is AssetInst asset && (asset.TypeId == (int)AssetClassID.MonoBehaviour || asset.TypeId < 0))
+                        {
+                            if (loadCt.IsCancellationRequested)
+                                loadCt.ThrowIfCancellationRequested();
+
+                            lock (fileInst.LockReader)
+                            {
+                                asset.MonoName = Workspace.Namer.GetMonoBehaviourNameFast(asset);
+                            }
+                        }
+                    }
                 }
             }, loadCt);
 
