@@ -343,8 +343,18 @@ public partial class AssetDocumentViewModel : Document
             _filterTypesFiltered = [];
             _typeRefLookup = [];
 
+            var oldSortDescriptions = CollectionView?.SortDescriptions?.ToList();
+
             CollectionView = new DataGridCollectionView(Items);
             CollectionView.Filter = SetDataGridFilter(SearchText);
+
+            if (oldSortDescriptions != null)
+            {
+                foreach (var sortDesc in oldSortDescriptions)
+                {
+                    CollectionView.SortDescriptions.Add(sortDesc);
+                }
+            }
         }
         catch (OperationCanceledException)
         {
