@@ -1,4 +1,4 @@
-﻿using AssetsTools.NET;
+using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
@@ -16,6 +16,12 @@ public partial class SelectTypeFilterViewModel : ViewModelBase, IDialogAware<IEn
     [ObservableProperty]
     public ObservableCollection<TypeFilterTypeEntry> _filterTypes = [];
 
+    [ObservableProperty]
+    public ObservableCollection<TypeFilterTypeEntry> _filteredFilterTypes = [];
+
+    [ObservableProperty]
+    public string _filterText = "";
+
     public string Title => "Select Type Filter";
     public int Width => 400;
     public int Height => 500;
@@ -27,6 +33,24 @@ public partial class SelectTypeFilterViewModel : ViewModelBase, IDialogAware<IEn
     public SelectTypeFilterViewModel(List<TypeFilterTypeEntry> filterTypes)
     {
         FilterTypes.AddRange(filterTypes);
+        FilteredFilterTypes.AddRange(filterTypes);
+    }
+
+    partial void OnFilterTextChanged(string value)
+    {
+        FilteredFilterTypes.Clear();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            FilteredFilterTypes.AddRange(FilterTypes);
+        }
+        else
+        {
+            foreach (var entry in FilterTypes)
+            {
+                if (entry.DisplayText.Contains(value, StringComparison.OrdinalIgnoreCase))
+                    FilteredFilterTypes.Add(entry);
+            }
+        }
     }
 
     public void SelectAll()
