@@ -55,6 +55,7 @@
                 <DataGridTextColumn Header="File" Binding="{Binding FileName, Mode=OneTime}" Width="150" />
                 <DataGridTextColumn Header="Asset Name" Binding="{Binding AssetName, Mode=OneTime}" Width="200" MinWidth="150" />
                 <DataGridTextColumn Header="Type" Width="120" Binding="{Binding Type, Converter={StaticResource AssetClassIDConverter}}" />
+                <DataGridTextColumn Header="Script" Width="150" MinWidth="100" Binding="{Binding MonoName, Mode=OneTime}" />
                 <DataGridTextColumn Header="Path ID" Binding="{Binding PathId, Mode=OneTime}" Width="160" />
                 <DataGridTextColumn Header="Offset" Binding="{Binding Offset, Mode=OneTime}" Width="100" />
             </DataGrid.Columns>

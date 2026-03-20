@@ -1,4 +1,4 @@
-﻿using AssetsTools.NET;
+using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -155,7 +155,8 @@ public partial class AssetDataSearchViewModel : ViewModelBase, IDialogAware<stri
                                         PathId = info.PathId,
                                         Type = (AssetClassID)info.TypeId,
                                         Offset = $"0x{info.ByteOffset + dataOffset + matchIdx:X}",
-                                        Asset = info as AssetInst
+                                        Asset = info as AssetInst,
+                                        MonoName = (info is AssetInst assetForMono) ? assetForMono.MonoName : null
                                     });
                                 }
                                 if (allFound.Count >= 40000)
@@ -201,7 +202,8 @@ public partial class AssetDataSearchViewModel : ViewModelBase, IDialogAware<stri
                                             PathId = info.PathId,
                                             Type = (AssetClassID)info.TypeId,
                                             Offset = $"0x{pos:X}",
-                                            Asset = info as AssetInst
+                                            Asset = info as AssetInst,
+                                            MonoName = (info is AssetInst assetForMono) ? assetForMono.MonoName : null
                                         });
                                         stream.Position = info.ByteOffset + info.ByteSize + dataOffset;
                                     }

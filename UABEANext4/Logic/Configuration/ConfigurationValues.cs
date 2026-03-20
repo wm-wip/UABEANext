@@ -36,6 +36,11 @@ public partial class ConfigurationValues : ObservableObject
     [property: ConfigDesc("Load container paths, which may take a while when loading many assets.")]
     private bool _loadContainerPaths = true;
 
+    [ObservableProperty]
+    [property: ConfigTitle("Resolve MonoBehaviour Script Names")]
+    [property: ConfigDesc("Read and cache script names for MonoBehaviour assets on load. Enables the Script column and script-name search. May slow down loading for files with many MonoBehaviours.")]
+    private bool _resolveMonoBehaviourNames = true;
+
     private readonly Action<int> _saveDebounceFunc = DebounceUtils.Debounce(
         (int _) => ConfigurationManager.SaveConfig(), 500);
 
