@@ -39,6 +39,7 @@ public partial class AssetDocumentViewModel : Document
 
     public Workspace Workspace { get; }
     public bool LoadContainers { get; }
+    public bool ResolveMonoBehaviourNames => ConfigurationManager.Settings.ResolveMonoBehaviourNames;
 
     public List<AssetInst> SelectedItems { get; set; } = [];
     public List<AssetsFileInstance> FileInsts { get; set; } = [];
@@ -58,6 +59,9 @@ public partial class AssetDocumentViewModel : Document
     public bool _isSearchCaseSensitive = false;
     [ObservableProperty]
     public AssetTextSearchKind _searchKind = 0;
+
+    [ObservableProperty]
+    public string _matchCountText = "";
 
     [ObservableProperty]
     public ObservableCollection<MenuOptionViewModel> _contextMenuItems = [];
@@ -109,10 +113,19 @@ public partial class AssetDocumentViewModel : Document
 
         _setDataGridFilterDb = DebounceUtils.Debounce<string>((searchText) =>
         {
-            CollectionView.Filter = SetDataGridFilter(searchText);
+            if (CollectionView != null)
+            {
+                CollectionView.Filter = SetDataGridFilter(searchText);
+                UpdateMatchCount();
+            }
         }, 300);
 
         WeakReferenceMessenger.Default.Register<WorkspaceClosingMessage>(this, (r, h) => _ = OnWorkspaceClosing(r, h));
+    }
+
+    private void UpdateMatchCount()
+    {
+        MatchCountText = $"{CollectionView?.ItemCount ?? 0} assets";
     }
 
     partial void OnSearchTextChanged(string value) => _setDataGridFilterDb(value);
@@ -343,8 +356,19 @@ public partial class AssetDocumentViewModel : Document
             _filterTypesFiltered = [];
             _typeRefLookup = [];
 
+            var oldSortDescriptions = CollectionView?.SortDescriptions?.ToList();
+
             CollectionView = new DataGridCollectionView(Items);
             CollectionView.Filter = SetDataGridFilter(SearchText);
+            UpdateMatchCount();
+
+            if (oldSortDescriptions != null)
+            {
+                foreach (var sortDesc in oldSortDescriptions)
+                {
+                    CollectionView.SortDescriptions.Add(sortDesc);
+                }
+            }
         }
         catch (OperationCanceledException)
         {
@@ -896,6 +920,7 @@ public partial class AssetDocumentViewModel : Document
 
         // reload filter
         CollectionView.Filter = SetDataGridFilter(SearchText);
+        UpdateMatchCount();
     }
 
     public void SetSelectedItems(List<AssetInst> assets)

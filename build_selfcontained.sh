@@ -1,0 +1,1 @@
+dotnet publish UABEANext4.Desktop/UABEANext4.Desktop.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:SolutionDir="$(pwd)/"

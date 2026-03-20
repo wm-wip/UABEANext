@@ -100,9 +100,10 @@
             </WrapPanel>
         </Border>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="4" Height="30" IsEnabled="{Binding !IsBusy}">
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" Margin="4" Height="30" IsEnabled="{Binding !IsBusy}">
             <TextBox Grid.Column="0" Text="{Binding SearchText}" Watermark="Search by name, type, script or path ID" VerticalContentAlignment="Center" />
-            <Button Grid.Column="1" Margin="4,0,0,0" Padding="10,0">
+            <TextBlock Grid.Column="1" Text="{Binding MatchCountText}" VerticalAlignment="Center" Margin="10,0" Opacity="0.6" />
+            <Button Grid.Column="2" Margin="4,0,0,0" Padding="10,0">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="avares://UABEANext4/Assets/Icons/action-filter.png" Width="14" Height="14" Margin="0,0,5,0" />
                     <TextBlock VerticalAlignment="Center">Filters</TextBlock>
@@ -163,11 +164,11 @@
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Name" MinWidth ="150" Width="200" Binding="{Binding DisplayName}" x:DataType="ws:AssetInst"/>
                     <DataGridTextColumn Header="Type" MinWidth ="120" Width="120" Binding="{Binding Type, Converter={StaticResource AssetClassIDConverter}}" x:DataType="ws:AssetInst"/>
-                    <DataGridTextColumn Header="Script" MinWidth="120" Width="150" Binding="{Binding MonoName}" x:DataType="ws:AssetInst"/>
+                    <DataGridTextColumn Header="Script" MinWidth="120" Width="150" Binding="{Binding MonoName}" x:DataType="ws:AssetInst" IsVisible="{Binding $parent[UserControl].((docs:AssetDocumentViewModel)DataContext).ResolveMonoBehaviourNames}"/>
                     <DataGridTextColumn Header="Container" MinWidth ="100" Width="100" Binding="{Binding DisplayContainer}" x:DataType="ws:AssetInst" IsVisible="{Binding $parent[UserControl].((docs:AssetDocumentViewModel)DataContext).LoadContainers}"/>
                     <DataGridTextColumn Header="Bundle Name" MinWidth ="120" Width="150" Binding="{Binding BundleName}" x:DataType="ws:AssetInst" IsVisible="False"/>
                     <DataGridTextColumn Header="File Name"  MinWidth ="120" Width="150" Binding="{Binding FileName}" x:DataType="ws:AssetInst"/>
-                    <DataGridTextColumn Header="Path ID" MinWidth ="130" Width="160" Binding="{Binding PathId}" x:DataType="ws:AssetInst"/>
+                    <DataGridTextColumn Header="Path ID" MinWidth ="80" Width="80" Binding="{Binding PathId}" x:DataType="ws:AssetInst"/>
                     <!--<DataGridTextColumn Header="Offset" Binding="{Binding ByteOffset}" x:DataType="ws:AssetInst"/>-->
                     <DataGridTextColumn Header="Size" MinWidth ="80" Width="80" Binding="{Binding ByteSizeModified}" x:DataType="ws:AssetInst"/>
                     <DataGridTextColumn Header="Modified" MinWidth="80" Width="80" Binding="{Binding ModifiedString}" x:DataType="ws:AssetInst"/>
