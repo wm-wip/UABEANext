@@ -39,6 +39,7 @@ public partial class AssetDocumentViewModel : Document
 
     public Workspace Workspace { get; }
     public bool LoadContainers { get; }
+    public bool ResolveMonoBehaviourNames => ConfigurationManager.Settings.ResolveMonoBehaviourNames;
 
     public List<AssetInst> SelectedItems { get; set; } = [];
     public List<AssetsFileInstance> FileInsts { get; set; } = [];

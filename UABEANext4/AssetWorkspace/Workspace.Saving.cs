@@ -1,4 +1,4 @@
-﻿using AssetsTools.NET;
+using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 using Avalonia.Platform.Storage;
 using System;
@@ -52,15 +52,17 @@ public partial class Workspace
         return false;
     }
 
-    private static bool TryOpenForWriting(string path, [NotNullWhen(true)] out FileStream? writeFs)
+    private static bool TryOpenForWriting(string path, [NotNullWhen(true)] out FileStream? writeFs, out Exception? ex)
     {
+        ex = null;
         try
         {
             writeFs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
             return true;
         }
-        catch
+        catch (Exception caughtEx)
         {
+            ex = caughtEx;
             writeFs = null;
             return false;
         }
@@ -178,18 +180,18 @@ public partial class Workspace
         }
 
         // verify we can write to this file
-        if (!TryOpenForWriting(origBundlePath, out var writeStream))
+        if (!TryOpenForWriting(origBundlePath, out var writeStream, out var exOrig))
         {
-            await MessageBoxUtil.ShowDialog("Error saving", "Couldn't open stream for writing");
+            await MessageBoxUtil.ShowDialog("Error saving", $"Couldn't open stream for writing.\n\nReason: {exOrig?.Message}");
             return (false, true);
         }
 
         var newName = "~" + Path.GetFileName(origBundlePath);
         var dir = Path.GetDirectoryName(origBundlePath)!;
         var tempWriteStreamPath = Path.Combine(dir, newName);
-        if (!TryOpenForWriting(tempWriteStreamPath, out var tempWriteStream))
+        if (!TryOpenForWriting(tempWriteStreamPath, out var tempWriteStream, out var exTemp))
         {
-            await MessageBoxUtil.ShowDialog("Error saving", "Couldn't open temp file stream for writing");
+            await MessageBoxUtil.ShowDialog("Error saving", $"Couldn't open temp file stream for writing.\n\nReason: {exTemp?.Message}");
             return (false, true);
         }
 

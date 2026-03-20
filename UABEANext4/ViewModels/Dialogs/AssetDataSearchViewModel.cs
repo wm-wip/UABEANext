@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using UABEANext4.AssetWorkspace;
 using UABEANext4.Interfaces;
 using UABEANext4.Logic;
+using UABEANext4.Logic.Configuration;
 using UABEANext4.Logic.Search;
 using UABEANext4.Services;
 using UABEANext4.Util;
@@ -40,6 +41,8 @@ public partial class AssetDataSearchViewModel : ViewModelBase, IDialogAware<stri
 
     [ObservableProperty]
     private bool _isBusy;
+
+    public bool ResolveMonoBehaviourNames => ConfigurationManager.Settings.ResolveMonoBehaviourNames;
 
     private readonly Workspace _workspace;
     private readonly List<AssetsFileInstance> _items;
